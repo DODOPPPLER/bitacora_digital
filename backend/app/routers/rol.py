@@ -19,10 +19,11 @@ def get_rol(campo:str, registro:str):
     query = f"SELECT * FROM rol WHERE {campo}={registro}"
     cur.execute(query)
     row = cur.fetchone()
-    if row:
-        return role_schema(row)
-    else:
+    
+    if not row:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Rol no encontrado")
+    
+    return role_schema(row)
     
 
 @router.get("/", response_model=list[Rol])
@@ -47,7 +48,6 @@ async def crear_rol(rol:Rol):
 @router.put("/", response_model=Rol)
 async def actualizar_rol(rol:Rol):
 
-    get_rol("id_rol", rol.id_rol)
     cur.execute("UPDATE rol SET nombre=%s, descripcion=%s WHERE id_rol=%s RETURNING *", (rol.nombre, rol.descripcion, rol.id_rol))
     rol_actualizado = cur.fetchone()
     if not rol_actualizado:
@@ -63,5 +63,6 @@ async def eliminar_rol(id:int):
     rol_eliminado = cur.fetchone()
     if not rol_eliminado:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al eliminar el rol")
-    
     cur.connection.commit()
+
+    return rol_eliminado

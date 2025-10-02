@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-class post(BaseModel):
-    id_post: int
+class Post(BaseModel):
+    id_post: int | None = None
     id_usuario: int
     titulo: str
     contenido: str
-    fecha_creacion: datetime
-    fecha_actualizacion: str | None = None
+    fecha_creacion: datetime | None = None
+    fecha_actualizacion: datetime | None = None

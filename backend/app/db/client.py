@@ -1,7 +1,10 @@
 import psycopg
+from decouple import config
 
+conection_string = f"dbname=bitacora_digital user={config('DB_USER')} password={config('DB_PASS')} host={config('DB_HOST')} port=5432"
 conn = psycopg.connect(
-    "dbname=bitacora_digital user=postgres password=Root host=localHost port=5432"
+    conection_string
 )
 cur = conn.cursor()
+
     

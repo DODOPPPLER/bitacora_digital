@@ -1,0 +1,6 @@
+fastapi[standard]
+pydantic
+psycopg[binary]
+uvicorn
+python-decouple
+psycopg[binary]

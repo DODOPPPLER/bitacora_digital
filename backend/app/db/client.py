@@ -6,5 +6,3 @@ conn = psycopg.connect(
     conection_string
 )
 cur = conn.cursor()
-
-    

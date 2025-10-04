@@ -1,11 +1,13 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from backend.app.models.usuario import Usuario, UsuarioCreate, UsuarioResponse
 from backend.app.schemas.usuario import usuarios_schema, usuario_schema, usuario_schema_update
-from backend.app.db.client import cur 
+from backend.app.db.client import cur
+from backend.app.utils.security import get_api_key
 
 router = APIRouter(
     prefix="/usuario",
     tags=["usuario"],
+    dependencies=[Depends(get_api_key)],
     responses={status.HTTP_404_NOT_FOUND: {"message": "No encontrado"}}
 )
 

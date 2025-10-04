@@ -1,11 +1,13 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from backend.app.models.rol import Rol
 from backend.app.schemas.rol import roles_schema, role_schema
-from backend.app.db.client import cur 
+from backend.app.db.client import cur
+from backend.app.utils.security import get_api_key
 
 router = APIRouter(
     prefix="/rol",
     tags=["rol"],
+    dependencies=[Depends(get_api_key)],
     responses={status.HTTP_404_NOT_FOUND: {"message": "No encontrado"}}
 )
 

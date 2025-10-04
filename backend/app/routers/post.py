@@ -1,13 +1,14 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from backend.app.models.post import Post
 from backend.app.schemas.post import posts_schema, post_schema
-
 from backend.app.db.client import cur 
+from backend.app.utils.security import get_api_key
 
 
 router = APIRouter(
     prefix="/post",
     tags=["post"],
+    dependencies=[Depends(get_api_key)],
     responses={status.HTTP_404_NOT_FOUND: {"message": "No encontrado"}}
 )
 

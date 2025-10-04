@@ -1,11 +1,13 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from backend.app.models.perfil import perfil
 from backend.app.schemas.perfil import perfiles_schema, perfil_schema
 from backend.app.db.client import cur
+from backend.app.utils.security import get_api_key
 
 router = APIRouter(
     prefix="/perfil",
     tags=["perfil"],
+    dependencies=[Depends(get_api_key)],
     responses={status.HTTP_404_NOT_FOUND: {"message": "No encontrado"}}
 )
 

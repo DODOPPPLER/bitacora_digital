@@ -1,32 +1,14 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, status, Depends
 from backend.app.models.rol import Rol
-from backend.app.schemas.rol import roles_schema, role_schema
-from backend.app.db.client import cur
 from backend.app.utils.security import get_api_key
+from backend.app.services.rol_services import *
 
 router = APIRouter(
     prefix="/rol",
     tags=["rol"],
     dependencies=[Depends(get_api_key)],
     responses={status.HTTP_404_NOT_FOUND: {"message": "No encontrado"}}
-)
-
-def get_roles():
-    cur.execute("SELECT * FROM rol")
-    roles = roles_schema(cur.fetchall())
-    return roles
-
-def get_rol(campo:str, registro:str):
-
-    query = f"SELECT * FROM rol WHERE {campo}={registro}"
-    cur.execute(query)
-    row = cur.fetchone()
-    
-    if not row:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Rol no encontrado")
-    
-    return role_schema(row)
-    
+) 
 
 @router.get("/", response_model=list[Rol])
 async def roles():
@@ -38,33 +20,14 @@ async def rol(id:str):
 
 @router.post("/", response_model=Rol, status_code=status.HTTP_201_CREATED)
 async def crear_rol(rol:Rol):
-
-    cur.execute("INSERT INTO rol (nombre, descripcion) VALUES (%s, %s) RETURNING *", (rol.nombre, rol.descripcion))
-    nuevo_rol = cur.fetchone()
-    if not nuevo_rol:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al crear el rol")
-    cur.connection.commit()
-
-    return role_schema(nuevo_rol)
+    return create_rol(rol)
 
 @router.put("/", response_model=Rol)
 async def actualizar_rol(rol:Rol):
 
-    cur.execute("UPDATE rol SET nombre=%s, descripcion=%s WHERE id_rol=%s RETURNING *", (rol.nombre, rol.descripcion, rol.id_rol))
-    rol_actualizado = cur.fetchone()
-    if not rol_actualizado:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al actualizar el rol")
-    cur.connection.commit()
-
-    return role_schema(rol_actualizado)
+    return update_rol(rol)
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def eliminar_rol(id:int):
-    get_rol("id_rol", id)
-    cur.execute("DELETE FROM rol WHERE id_rol=%s RETURNING *", (id,))
-    rol_eliminado = cur.fetchone()
-    if not rol_eliminado:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Error al eliminar el rol")
-    cur.connection.commit()
-
-    return rol_eliminado
+    
+    return delete_rol(id)
